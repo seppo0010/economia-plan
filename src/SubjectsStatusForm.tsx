@@ -1,23 +1,20 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
 import { getGraphData } from './plan'
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import { toggleSubject } from './subjectsStatus'
+import { RootState } from './store'
 import './SubjectsStatusForm.css'
 
 function SubjectsStatusForm() {
+  const checked = useSelector((state: RootState) => state.subjectsStatus);
+  const dispatch = useDispatch()
   const [nodes, setNodes] = useState<null | {id: string | number, label: string}[]>(null)
-  const [checked, setChecked] = useState(new Set())
   const handleChange = (ev: any) => {
     const id = ev.target.name
-    const newChecked = new Set()
-    checked.forEach((c) => newChecked.add(c))
-    if (checked.has(id)) {
-      newChecked.delete(id)
-    } else {
-      newChecked.add(id)
-    }
-    setChecked(newChecked)
+    dispatch(toggleSubject(id))
   }
   useState(() => {
     (async () => {
