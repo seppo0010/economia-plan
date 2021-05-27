@@ -5,6 +5,3 @@ export async function getGraphData() {
     const dot = await (await fetch(dotPath)).text()
     return parseDOTNetwork(dot);
 }
-
-export function getSubjects() {
-}

@@ -1,7 +1,9 @@
+import React, { useState } from 'react';
 import './DependencyChart.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from './store'
 import { toggleSubject } from './subjectsStatus'
+import { getGraphData } from './plan'
 
 const subjectsRect = {
   131: [268, 201, 136, 62],
@@ -30,12 +32,26 @@ function DependencyChart() {
   const handleClick = (id: string) => {
     dispatch(toggleSubject(id))
   }
+  const [graphData, setGraphData] = useState(null)
+  useState(() => {
+    (async () => {
+      setGraphData(await getGraphData())
+    })()
+  })
+  const canDo = (subject: string) => {
+      if (checked.has(subject) || !graphData) {
+        return false;
+      }
+      const defaultEdges: {edges: {from: string, to: string}[]} = {edges: []}
+      const requirements = (graphData || defaultEdges).edges.filter((e) => e.to.toString() === subject).map((e) => e.from.toString())
+      return requirements.every((requirement) => checked.has(requirement))
+  }
   return (
       <div>
           <svg width="1406" height="946" viewBox="0 0 1406 946"  xmlns="http://www.w3.org/2000/svg">
               <image href="/acercade_correlatividades.jpg" width="1406" height="946"/>
               {Object.entries(subjectsRect).map(([key, value]) => (
-                <rect key={key} x={value[0]} y={value[1]} width={value[2]} height={value[3]} fill={checked.has(key) ? 'red' : 'transparent'} fillOpacity="0.7" rx="22" ry="22" onClick={() => handleClick(key.toString())} cursor="pointer" />
+                <rect key={key} x={value[0]} y={value[1]} width={value[2]} height={value[3]} fill={checked.has(key) ? 'red' : canDo(key) ? 'yellow' : 'transparent'} fillOpacity="0.7" rx="22" ry="22" onClick={() => handleClick(key.toString())} cursor="pointer" />
               ))}
           </svg>
       </div>
