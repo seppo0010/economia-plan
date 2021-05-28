@@ -1,3 +1,5 @@
+import { GraphData } from './plan'
+
 const subjectsRect = {
   131: [268, 201, 136, 62],
   144: [266, 358, 136, 62],
@@ -19,7 +21,8 @@ const subjectsRect = {
   169: [1187, 552, 134, 60],
   168: [1187, 255, 134, 60],
 };
-const canDo = (subject: string, checked: Set<string>, graphData: {edges: {from: string, to: string}[]}) => {
+const canDo = (subject: number | string, checked: Set<string>, graphData: GraphData) => {
+  subject = subject.toString()
   if (checked.has(subject)) {
     return false;
   }
