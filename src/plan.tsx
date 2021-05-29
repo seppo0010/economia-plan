@@ -16,9 +16,15 @@ export declare interface GraphData {
   edges: Edge[],
 }
 
+let network: Promise<GraphData> | null = null;
 export async function getGraphData(): Promise<GraphData> {
-    const dot = await (await fetch(dotPath)).text()
-    return parseDOTNetwork(dot);
+  if (!network) {
+    network = new Promise(async (resolve, reject) => {
+      const dot = await (await fetch(dotPath)).text()
+      resolve(parseDOTNetwork(dot))
+    })
+  }
+  return network
 }
 
 export function subjectLength(subject: number | string): number {
