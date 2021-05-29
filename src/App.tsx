@@ -3,13 +3,16 @@ import DependencyChart from './DependencyChart'
 import DifficultyAssessment from './DifficultyAssessment'
 import { Provider } from 'react-redux'
 import store from './store'
+import Container from '@material-ui/core/Container';
 
 function App() {
   return (
     <div className="App">
       <Provider store={store}>
-        <DependencyChart />
-        <DifficultyAssessment />
+        <Container maxWidth="lg">
+          <DependencyChart />
+          <DifficultyAssessment />
+        </Container>
       </Provider>
     </div>
   );
