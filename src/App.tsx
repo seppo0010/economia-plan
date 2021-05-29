@@ -1,6 +1,7 @@
 import React from 'react';
 import DependencyChart from './DependencyChart'
 import DifficultyAssessment from './DifficultyAssessment'
+import InscriptionRecommendation from './InscriptionRecommendation'
 import { Provider } from 'react-redux'
 import store from './store'
 import Container from '@material-ui/core/Container';
@@ -12,6 +13,7 @@ function App() {
         <Container maxWidth="lg">
           <DependencyChart />
           <DifficultyAssessment />
+          <InscriptionRecommendation />
         </Container>
       </Provider>
     </div>

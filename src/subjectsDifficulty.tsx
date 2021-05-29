@@ -17,4 +17,3 @@ export function setDifficulty(id: string, difficulty: number) {
     difficulty,
   }
 }
-

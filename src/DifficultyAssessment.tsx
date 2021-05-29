@@ -21,6 +21,7 @@ function DifficultyAssessment() {
     (async () => {
       const graphData = await getGraphData()
       setSubjects(Object.fromEntries(graphData.nodes.sort((e1, e2) => e1.id - e2.id).map((n) => [n.id, n.label])))
+      graphData.nodes.forEach((n) => dispatch(setDifficulty(n.id.toString(), subjectLength(n.id))))
     })()
   })
 
