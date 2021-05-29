@@ -14,6 +14,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 
 function DifficultyAssessment() {
   const subjectsDifficulty = useSelector((state: RootState) => state.subjectsDifficulty);
+  const checked = useSelector((state: RootState) => state.subjectsStatus);
   const [subjects, setSubjects] = useState<null | { [k: string]: any; }>(null)
   const [percentaje, setPercentaje] = useState(100)
   useState(() => {
@@ -45,7 +46,7 @@ function DifficultyAssessment() {
       <h2>Cuatrimestres para aprobar las materias</h2>
       <p>Determinar la dificultad estimada de cada materia para armar un plan. La dificultad se mide en cuatrimestes desde inscripción hasta aprobar el final.</p>
       <Grid container spacing={3}>
-        {subjects && Object.entries(subjects).map(([id, label]) => (
+        {subjects && Object.entries(subjects).filter(([id]) => !checked.has(id)).map(([id, label]) => (
           <Grid item key={id} xs={4}>
             <Grid>
             {label}
