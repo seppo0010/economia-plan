@@ -1,33 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import { getGraphData, subjectLength } from './plan'
-import { setDifficulty } from './subjectsDifficulty'
+import { setDifficulty, setSubjectsPerCuatrimestre } from './subjectsDifficulty'
 import { RootState } from './store'
 
-import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import Button from '@material-ui/core/Button';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputLabel from '@material-ui/core/InputLabel';
 
 function DifficultyAssessment() {
   const subjectsDifficulty = useSelector((state: RootState) => state.subjectsDifficulty);
-  const checked = useSelector((state: RootState) => state.subjectsStatus);
-  const [subjects, setSubjects] = useState<null | { [k: string]: any; }>(null)
-  const [subjectsPerCuatrimestre, setSubjectsPerCuatrimestre] = useState(3)
-  useState(() => {
-    (async () => {
-      const graphData = await getGraphData()
-      setSubjects(Object.fromEntries(graphData.nodes.sort((e1, e2) => e1.id - e2.id).map((n) => [n.id, n.label])))
-    })()
-  })
+  const subjectsPerCuatrimestre = useSelector((state: RootState) => state.subjectsPerCuatrimestre);
 
   const dispatch = useDispatch()
   const updateDifficulty = (difficulty: number) => {
     dispatch(setDifficulty(difficulty))
   }
+  const updateSubjectsPerCuatrimestre = (subjectsPerC: number) => {
+    dispatch(setSubjectsPerCuatrimestre(subjectsPerC))
+  }
+
   return (
     <div>
       <h2>Cuatrimestres para aprobar las materias</h2>
@@ -51,7 +44,7 @@ function DifficultyAssessment() {
           labelId="label-materias-por-cuatrimestre"
           id="materias-por-cuatrimestre"
           value={subjectsPerCuatrimestre}
-          onChange={(e: React.ChangeEvent<{value: unknown}>) => setSubjectsPerCuatrimestre(e.target.value as number)}
+          onChange={(e: React.ChangeEvent<{value: unknown}>) => updateSubjectsPerCuatrimestre(e.target.value as number)}
           labelWidth={180}
           style={{width: 200}}
         >
