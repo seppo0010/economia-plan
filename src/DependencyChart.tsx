@@ -6,6 +6,8 @@ import { toggleSubject } from './subjectsStatus'
 import { getGraphData, GraphData } from './plan'
 import { subjectsRect, canDo } from './dependencyChartData'
 import acercade_correlatividades from './acercade_correlatividades.jpg'
+import { Link } from "react-router-dom";
+import Button from '@material-ui/core/Button';
 
 function DependencyChart() {
   const checked = useSelector((state: RootState) => state.subjectsStatus);
@@ -36,6 +38,7 @@ function DependencyChart() {
                 <rect key={key} x={value[0]} y={value[1]} width={value[2]} height={value[3]} fill={checked.has(key) ? 'red' : _canDo(key) ? 'yellow' : 'transparent'} fillOpacity="0.7" rx="22" ry="22" onClick={() => handleClick(key.toString())} cursor="pointer" />
               ))}
           </svg>
+          <Link component={Button} to="/difficulty">Siguiente</Link>
       </div>
   )
 }

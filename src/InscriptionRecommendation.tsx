@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux'
 import { RootState } from './store'
 import { getGraphData } from './plan'
@@ -9,6 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import LinearProgress from '@material-ui/core/LinearProgress';
 /* eslint-disable import/no-webpack-loader-syntax */
 import Worker from 'worker-loader!./estimateSubjects.worker';
+import { Link } from "react-router-dom";
 
 const populationSize = 10;
 const simulations = 100;
@@ -23,8 +24,7 @@ function InscriptionRecommendation() {
   const [progress, setProgress] = useState<null | number>(null)
   const [processing, setProcessing] = useState(false)
 
-  const updatePlan = async () => {
-    if (!subjects || !edges) return;
+  const updatePlan = async (subjects: { [k: string]: any; }, edges: { from: number, to: number }[]) => {
     setProcessing(true)
     const worker = new Worker();
     const id = new Date()
@@ -52,14 +52,19 @@ function InscriptionRecommendation() {
   useState(() => {
     (async () => {
       const graphData = await getGraphData()
-      setSubjects(Object.fromEntries(graphData.nodes.sort((e1, e2) => e1.id - e2.id).map((n) => [n.id, n.label])))
+      const s = Object.fromEntries(graphData.nodes.sort((e1, e2) => e1.id - e2.id).map((n) => [n.id, n.label]))
+      setSubjects(s)
       setEdges(graphData.edges)
+      updatePlan(s, graphData.edges)
     })()
   })
   return (
     <div>
       <h2>Inscripciones recomendadas</h2>
-      {subjects && !processing && <Button onClick={updatePlan}>Crear plan</Button>}
+      {subjects && edges && !processing && (<div>
+        <Button onClick={() => updatePlan(subjects, edges)}>Probar de nuevo</Button>
+        <Link component={Button} to="/">Volver a empezar</Link>
+      </div>)}
       {progress !== null && processing && <LinearProgress variant="determinate" value={progress} />}
       {!processing && recommendedSubjects && subjects && (
         <List>
