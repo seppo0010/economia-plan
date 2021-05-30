@@ -46,6 +46,7 @@ function InscriptionRecommendation() {
   const [subjectsPerCuatrimestre, setSubjectsPerCuatrimestre] = useState(3)
   const [plan, setPlan] = useState<null | number[][]>(null)
   const isApproved = (subject: number, done: number[]) => {
+    if (checked.has(subject.toString())) return true
     return done.filter((s) => s === subject).length === subjectsDifficulty[subject]
   }
   const canDo = (subject: number, done: number[]) => {
