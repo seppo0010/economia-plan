@@ -2,14 +2,12 @@ import React, { useState } from 'react';
 import GeneticAlgorithmConstructor from 'geneticalgorithm'
 import { useSelector } from 'react-redux'
 import { RootState } from './store'
+import { subjectLength } from './plan'
 import { getGraphData } from './plan'
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 
 // https://stackoverflow.com/a/2450976
 function shuffle(array: any[]): any[] {
@@ -31,11 +29,18 @@ function shuffle(array: any[]): any[] {
   return array;
 }
 
+declare interface Phenotype {
+  subjectsOrder: number[],
+  difficulty: {[subject: string]: number}
+}
+
 function InscriptionRecommendation() {
-  const subjectsDifficulty = useSelector((state: RootState) => state.subjectsDifficulty);
+  const subjectsDifficulty: number = useSelector((state: RootState) => state.subjectsDifficulty);
+  const subjectsPerCuatrimestre: number  = useSelector((state: RootState) => state.subjectsPerCuatrimestre);
   const checked = useSelector((state: RootState) => state.subjectsStatus);
   const [subjects, setSubjects] = useState<null | { [k: string]: any; }>(null)
   const [edges, setEdges] = useState<null | { from: number, to: number }[]>(null)
+  const [recommendedSubjects, setRecommendedSubjects] = useState<null | [string, number][]>(null)
   useState(() => {
     (async () => {
       const graphData = await getGraphData()
@@ -43,25 +48,23 @@ function InscriptionRecommendation() {
       setEdges(graphData.edges)
     })()
   })
-  const [subjectsPerCuatrimestre, setSubjectsPerCuatrimestre] = useState(3)
-  const [plan, setPlan] = useState<null | number[][]>(null)
-  const isApproved = (subject: number, done: number[]) => {
+  const isApproved = (subject: number, done: number[], phenotype: Phenotype) => {
     if (checked.has(subject.toString())) return true
-    return done.filter((s) => s === subject).length === subjectsDifficulty[subject]
+    return done.filter((s) => s === subject).length === phenotype.difficulty[subject]
   }
-  const canDo = (subject: number, done: number[]) => {
+  const canDo = (subject: number, done: number[], phenotype: Phenotype) => {
     if (!edges) return false;
-    if (isApproved(subject, done)) return false;
+    if (isApproved(subject, done, phenotype)) return false;
     const requirements = edges.filter((e) => e.to === subject).map((e) => e.from)
-    return requirements.every((requisito) => isApproved(requisito, done))
+    return requirements.every((requisito) => isApproved(requisito, done, phenotype))
   }
-  const phenotypeToPlan = (phenotype: number[]) => {
+  const phenotypeToPlan = (phenotype: Phenotype): number[][] => {
     const myPlan: number[][] = []
-    while (!phenotype.every((s) => isApproved(s, myPlan.flat().flat()))) {
+    while (!phenotype.subjectsOrder.every((s) => isApproved(s, myPlan.flat().flat(), phenotype))) {
       const cuatri = []
-      for (let i = 0; i < phenotype.length; i++) {
-        const subject = phenotype[i]
-        if (canDo(subject, myPlan.flat().flat())) {
+      for (let i = 0; i < phenotype.subjectsOrder.length; i++) {
+        const subject = phenotype.subjectsOrder[i]
+        if (canDo(subject, myPlan.flat().flat(), phenotype)) {
           cuatri.push(subject)
           if (cuatri.length === subjectsPerCuatrimestre) break
         }
@@ -71,7 +74,7 @@ function InscriptionRecommendation() {
     return myPlan
   }
 
-  const arePhenotypeEqual = (ph1: number[], ph2: number[]) => {
+  const arePhenotypeEqual = (ph1: Phenotype, ph2: Phenotype) => {
     const cs1 = phenotypeToPlan(ph1)
     const cs2 = phenotypeToPlan(ph2)
     if (cs1.length !== cs2.length) return false
@@ -82,68 +85,77 @@ function InscriptionRecommendation() {
     }
     return true
   }
-  const mutationFunction = (oldPhenotype: number[]) => {
-    const phenotype = oldPhenotype.slice()
-    while (arePhenotypeEqual(phenotype, oldPhenotype)) {
-      const pos = Math.floor(Math.random() * (phenotype.length - 1));
-      [phenotype[pos], phenotype[pos + 1]] = [phenotype[pos + 1], phenotype[pos]];
+  const mutationFunction = (oldPhenotype: Phenotype) => {
+    const {difficulty} = oldPhenotype
+    const subjectsOrder = oldPhenotype.subjectsOrder.slice()
+    while (arePhenotypeEqual({
+      subjectsOrder,
+      difficulty,
+    }, oldPhenotype)) {
+      const pos = Math.floor(Math.random() * (subjectsOrder.length - 1));
+      [subjectsOrder[pos], subjectsOrder[pos + 1]] = [subjectsOrder[pos + 1], subjectsOrder[pos]];
     }
-    return phenotype
+    return {
+      subjectsOrder,
+      difficulty,
+    }
   }
 
-  const fitnessFunction = (phenotype: number[]) => {
+  const fitnessFunction = (phenotype: Phenotype) => {
     return -phenotypeToPlan(phenotype).length
   }
 
-  const getRandomPhenotype = () => {
-    if (!subjects) return [];
-    return shuffle(Object.keys(subjects).map((s) => parseInt(s, 10)).filter((s) => !checked.has(s.toString())))
+  const getRandomPhenotype = (): null | Phenotype => {
+    if (subjectsDifficulty < 1 || subjectsDifficulty > 100) return null
+    if (!subjects) return null
+    const getDifficulty = () => {
+      const prob = subjectsDifficulty / 100
+      return Object.fromEntries(Object.keys(subjects).map((id) => {
+        let baseDifficulty = subjectLength(id)
+        let i
+        for (i = 0; i < 3; i++) {
+          if (Math.random() < prob) break
+        }
+        return [id, baseDifficulty + i]
+      }))
+    }
+
+    return {
+      subjectsOrder: shuffle(Object.keys(subjects).map((s) => parseInt(s, 10)).filter((s) => !checked.has(s.toString()))),
+      difficulty: getDifficulty(),
+    }
   }
   const populationSize = 10;
-  const defaultPopulations = Array.from({length: populationSize}).map(() => getRandomPhenotype())
-  const createRandomPlan = () => {
-    setPlan(phenotypeToPlan(getRandomPhenotype()))
-  }
-  const createGoodPlan = () => {
-    let ga = GeneticAlgorithmConstructor({
-      mutationFunction,
-      fitnessFunction,
-      population: defaultPopulations,
-      populationSize,
-    })
-    setPlan(phenotypeToPlan(ga.evolve().evolve().evolve().evolve().evolve().evolve().best()))
+  const simulations = 100;
+  const estimateSubjectsForNextCuatrimestre = () => {
+    if (!subjects) return;
+    const subjectsCount = Object.fromEntries(Object.keys(subjects).map((id) => [id, 0]))
+    for (let i = 0; i < simulations; i++) {
+      const defaultPopulations = Array.from({length: populationSize}).map(() => getRandomPhenotype())
+      let ga = GeneticAlgorithmConstructor({
+        mutationFunction,
+        fitnessFunction,
+        population: defaultPopulations,
+        populationSize,
+      })
+      phenotypeToPlan(ga.evolve().evolve().evolve().evolve().evolve().evolve().best())[0].forEach((s) => {
+        subjectsCount[s.toString()] += 1
+      })
+    }
+    setRecommendedSubjects(Object.entries(subjectsCount).filter(([id, s]) => s > 0).sort(([_1, e1], [_2, e2]) => - e1 + e2))
   }
   return (
     <div>
-      <h2>Plan de inscripciones</h2>
-      <FormControl>
-        <Select
-          labelId="label-materias-por-cuatrimestre"
-          id="materias-por-cuatrimestre"
-          value={subjectsPerCuatrimestre}
-          onChange={(e: React.ChangeEvent<{value: unknown}>) => setSubjectsPerCuatrimestre(e.target.value as number)}
-        >
-          <MenuItem value={1}>1</MenuItem>
-          <MenuItem value={2}>2</MenuItem>
-          <MenuItem value={3}>3</MenuItem>
-          <MenuItem value={4}>4</MenuItem>
-        </Select>
-      </FormControl>
-      {subjects && <Button onClick={createRandomPlan}>Crear plan aleatorio</Button>}
-      {subjects && <Button onClick={createGoodPlan}>Crear plan piola</Button>}
-      {plan && subjects && (
-        plan.map((cuat, i) => (
-          <>
-            <h3>Cuatrimestre {i+1}</h3>
-            <List>
-            {cuat.map((subject) => (
-                  <ListItem>
-                    <ListItemText primary={subjects[subject]} />
-                  </ListItem>
-                ))}
-            </List>
-          </>
-        ))
+      <h2>Inscripciones recomendadas</h2>
+      {subjects && <Button onClick={estimateSubjectsForNextCuatrimestre}>Crear plan</Button>}
+      {recommendedSubjects && subjects && (
+        <List>
+          {recommendedSubjects.map(([id, quant]) => (
+            <ListItem>
+              <ListItemText primary={`${subjects[id]} (${Math.round(10000 * quant / simulations) / 100}%)`} />
+            </ListItem>
+          ))}
+        </List>
       )}
     </div>
   )

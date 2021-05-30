@@ -28,6 +28,8 @@ function DependencyChart() {
   }
   return (
       <div>
+          <h2>Materias aprobadas</h2>
+          <p>Seleccioná qué materias ya aprobaste.</p>
           <svg viewBox="0 0 1406 946" xmlns="http://www.w3.org/2000/svg">
               <image href={acercade_correlatividades} width="1406" height="946"/>
               {Object.entries(subjectsRect).map(([key, value]) => (
