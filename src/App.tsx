@@ -2,6 +2,7 @@ import React from 'react';
 import DependencyChart from './DependencyChart'
 import DifficultyAssessment from './DifficultyAssessment'
 import InscriptionRecommendation from './InscriptionRecommendation'
+import Welcome from './Welcome'
 import { Provider } from 'react-redux'
 import store from './store'
 import Container from '@material-ui/core/Container';
@@ -20,6 +21,9 @@ function App() {
           <Container maxWidth="lg">
             <Switch>
               <Route exact path="/">
+                <Welcome />
+              </Route>
+              <Route exact path="/approved">
                 <DependencyChart />
               </Route>
               <Route exact path="/difficulty">

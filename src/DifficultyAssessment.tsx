@@ -59,7 +59,7 @@ function DifficultyAssessment() {
         </FormControl>
       </div>
       <div>
-        <Link component={Button} to="/">Anterior</Link>
+        <Link component={Button} to="/approved">Anterior</Link>
         <Link component={Button} to="/recommendation">Siguiente</Link>
       </div>
     </div>
