@@ -10,9 +10,26 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 /* eslint-disable import/no-webpack-loader-syntax */
 import Worker from 'worker-loader!./estimateSubjects.worker';
 import { Link } from "react-router-dom";
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
 const populationSize = 10;
-const simulations = 100;
+const simulations = 1000;
+
+function LinearProgressWithLabel(props: any) {
+  return (
+    <Box display="flex" alignItems="center">
+      <Box width="100%" mr={1}>
+        <LinearProgress variant="determinate" {...props} />
+      </Box>
+      <Box minWidth={35}>
+        <Typography variant="body2" color="textSecondary">{`${Math.round(
+          props.value,
+        )}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
 
 function InscriptionRecommendation() {
   const subjectsDifficulty: number = useSelector((state: RootState) => state.subjectsDifficulty);
@@ -31,6 +48,7 @@ function InscriptionRecommendation() {
     worker.onmessage = (event) => {
       if (event.data[0] === `progress_${id}`) {
         setProgress(event.data[1] * 100)
+        setRecommendedSubjects(event.data[2])
       }
       if (event.data[0] === `return_${id}`) {
         setRecommendedSubjects(event.data[1])
@@ -65,12 +83,12 @@ function InscriptionRecommendation() {
         <Button onClick={() => updatePlan(subjects, edges)}>Probar de nuevo</Button>
         <Link component={Button} to="/">Volver a empezar</Link>
       </div>)}
-      {progress !== null && processing && <LinearProgress variant="determinate" value={progress} />}
-      {!processing && recommendedSubjects && subjects && (
+      {progress !== null && processing && <LinearProgressWithLabel variant="determinate" value={progress} />}
+      {progress && recommendedSubjects && subjects && (
         <List>
           {recommendedSubjects.map(([id, quant]) => (
             <ListItem key={id}>
-              <ListItemText primary={`${subjects[id]} (${Math.round(10000 * quant / simulations) / 100}%)`} />
+              <ListItemText primary={`${subjects[id]} (${new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(quant / (progress * simulations) * 10000)}%)`} />
             </ListItem>
           ))}
         </List>

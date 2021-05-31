@@ -8,7 +8,7 @@ declare interface Phenotype {
 
 
 function estimateSubjectsForNextCuatrimestre(
-  setProgress: (p: number) => void,
+  setProgress: (p: number, partial: [string, number][]) => void,
   subjects: {[subject: string]: string},
   subjectsDifficulty: number,
   checked: Set<string>,
@@ -16,8 +16,8 @@ function estimateSubjectsForNextCuatrimestre(
   subjectsPerCuatrimestre: number,
   populationSize: number,
   simulations: number,
-) {
-  setProgress(0)
+): [string, number][] {
+  setProgress(0, [])
   function shuffle(array: any[]): any[] {
     var currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -111,8 +111,9 @@ function estimateSubjectsForNextCuatrimestre(
     }
   }
   const subjectsCount = Object.fromEntries(Object.keys(subjects).map((id) => [id, 0]))
+  const getBest = () => Object.entries(subjectsCount).filter(([id, s]) => s > 0).sort(([_1, e1], [_2, e2]) => - e1 + e2)
   for (let i = 0; i < simulations; i++) {
-    setProgress(i / simulations)
+    setProgress(i / simulations, getBest())
     const defaultPopulations = Array.from({length: populationSize}).map(() => getRandomPhenotype())
     let ga = GeneticAlgorithmConstructor({
       mutationFunction,
@@ -124,7 +125,7 @@ function estimateSubjectsForNextCuatrimestre(
       subjectsCount[s.toString()] += 1
     })
   }
-  return Object.entries(subjectsCount).filter(([id, s]) => s > 0).sort(([_1, e1], [_2, e2]) => - e1 + e2)
+  return getBest()
 }
 
 /* eslint-disable no-restricted-globals */
@@ -137,8 +138,8 @@ ctx.onmessage = (event) => {
   const exposed = {
     estimateSubjectsForNextCuatrimestre,
   } as any
-  ctx.postMessage([`return_${id}`, exposed[method].apply(null, [(progress: number) => {
-    ctx.postMessage([`progress_${id}`, progress])
+  ctx.postMessage([`return_${id}`, exposed[method].apply(null, [(progress: number, partial: [string, number][]) => {
+    ctx.postMessage([`progress_${id}`, progress, partial])
   }].concat(params))])
 };
 export default null as any;
