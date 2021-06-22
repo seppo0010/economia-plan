@@ -1,0 +1,29 @@
+{
+  "name": "derecho-plan3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "create_charts": "ts-node --files ./src/create_charts.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seppo0010/derecho-plan3.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/seppo0010/derecho-plan3/issues"
+  },
+  "homepage": "https://github.com/seppo0010/derecho-plan3#readme",
+  "devDependencies": {
+    "@types/node": "^15.12.4",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.4"
+  },
+  "dependencies": {
+    "dotparser": "^1.0.0"
+  }
+}
