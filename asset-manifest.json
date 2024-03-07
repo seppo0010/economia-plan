@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "/economia-plan/static/css/main.a672b262.chunk.css",
+    "main.js": "/economia-plan/static/js/main.becb6106.chunk.js",
+    "main.js.map": "/economia-plan/static/js/main.becb6106.chunk.js.map",
+    "runtime-main.js": "/economia-plan/static/js/runtime-main.b7623121.js",
+    "runtime-main.js.map": "/economia-plan/static/js/runtime-main.b7623121.js.map",
+    "static/js/2.1961d46d.chunk.js": "/economia-plan/static/js/2.1961d46d.chunk.js",
+    "static/js/2.1961d46d.chunk.js.map": "/economia-plan/static/js/2.1961d46d.chunk.js.map",
+    "static/js/3.b1e2daa7.chunk.js": "/economia-plan/static/js/3.b1e2daa7.chunk.js",
+    "static/js/3.b1e2daa7.chunk.js.map": "/economia-plan/static/js/3.b1e2daa7.chunk.js.map",
+    "index.html": "/economia-plan/index.html",
+    "static/css/main.a672b262.chunk.css.map": "/economia-plan/static/css/main.a672b262.chunk.css.map",
+    "static/js/2.1961d46d.chunk.js.LICENSE.txt": "/economia-plan/static/js/2.1961d46d.chunk.js.LICENSE.txt",
+    "static/js/estimateSubjects.worker.4c71ef61.worker.js": "/economia-plan/static/js/estimateSubjects.worker.4c71ef61.worker.js",
+    "static/js/estimateSubjects.worker.4c71ef61.worker.js.LICENSE.txt": "/economia-plan/static/js/estimateSubjects.worker.4c71ef61.worker.js.LICENSE.txt",
+    "static/js/estimateSubjects.worker.4c71ef61.worker.js.map": "/economia-plan/static/js/estimateSubjects.worker.4c71ef61.worker.js.map",
+    "static/media/acercade_correlatividades.ba187615.jpg": "/economia-plan/static/media/acercade_correlatividades.ba187615.jpg",
+    "static/media/main.e1c87d53.dot": "/economia-plan/static/media/main.e1c87d53.dot"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.b7623121.js",
+    "static/js/2.1961d46d.chunk.js",
+    "static/css/main.a672b262.chunk.css",
+    "static/js/main.becb6106.chunk.js"
+  ]
+}

@@ -1,0 +1,44 @@
+digraph {
+    283[label="Macroeconomía II"]
+    285[label="Estadística II"]
+    286[label="Microeconomía II"]
+    288[label="Matemática para economistas"]
+    289[label="Epistemología de la Economía"]
+    290[label="Microeconomía I"]
+    551[label="Econometría"]
+    552[label="Dinero, Crédito y Bancos"]
+    553[label="Historia del Pensamiento Económico"]
+    554[label="Crecimiento Económico"]
+    555[label="Organización Industrial"]
+    556[label="Finanzas Públicas"]
+    557[label="Estructura Social Argentina"]
+    558[label="Economía Internacional"]
+    559[label="Desarrollo Económico"]
+    560[label="Estructura Económica Argentina"]
+    561[label="Cuentas Nacionales"]
+    287[label="Geografía Económica"]
+
+    288->283
+    288->286
+    290->286
+    290->286
+    290->289
+    285->551
+    288->551
+    283->552
+    286->552
+    288->552
+    290->553
+    283->554
+    286->554
+    288->554
+    286->555
+    290->556
+    561->557
+    283->558
+    290->558
+    557->559
+    560->559
+    561->560
+    287->560
+}
